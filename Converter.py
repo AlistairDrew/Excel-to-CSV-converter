@@ -17,6 +17,20 @@ class ExcelToCSVConverter:
         output_file_button = tk.Button(self.root, text='Select Output File', command=self.select_output_file)
         output_file_button.pack()
         
+        # Create headers input field
+        self.headers = tk.StringVar()
+        headers_label = tk.Label(self.root, text='Headers (comma-separated):')
+        headers_label.pack()
+        headers_entry = tk.Entry(self.root, textvariable=self.headers)
+        headers_entry.pack()
+        
+        # Create data input field
+        self.data = tk.StringVar()
+        data_label = tk.Label(self.root, text='Data (comma-separated rows):')
+        data_label.pack()
+        data_entry = tk.Entry(self.root, textvariable=self.data)
+        data_entry.pack()
+        
         # Create conversion button
         convert_button = tk.Button(self.root, text='Convert', command=self.convert)
         convert_button.pack()
@@ -34,12 +48,21 @@ class ExcelToCSVConverter:
     def convert(self):
         input_file_path = self.input_file_path.get()
         output_file_path = self.output_file_path.get()
-        if input_file_path and output_file_path:
+        headers = self.headers.get().split(',')
+        data = [row.split(',') for row in self.data.get().split('\n')]
+        
+        if input_file_path and output_file_path and headers and data:
             try:
                 # Read the Excel file into a pandas DataFrame
                 df = pd.read_excel(input_file_path)
                 
-                # Write the DataFrame to a CSV file
+                # Create a new DataFrame with the specified headers and data
+                new_df = pd.DataFrame(data, columns=headers)
+                
+                # Append the new DataFrame to the original DataFrame
+                df = pd.concat([df, new_df], sort=False)
+                
+                # Write the combined DataFrame to a CSV file
                 df.to_csv(output_file_path, index=False)
                 
                 tk.messagebox.showinfo('Conversion Successful', 'Excel file converted to CSV format.')
