@@ -57,6 +57,15 @@ def import_headings():
 import_button = tk.Button(headings_window, text='Import Headings', command=import_headings)
 import_button.grid(row=4, column=0)
 
+# Create a button for clearing the column headings
+def clear_headings():
+    for col in worksheet.iter_cols(1, worksheet.max_column):
+        col[0].value = None
+    current_headings_listbox.delete(0, tk.END)
+
+clear_button = tk.Button(headings_window, text='Clear', command=clear_headings)
+clear_button.grid(row=4, column=1)
+
 # Create a button for saving the changes and closing the window
 def save_and_close():
     workbook.save(file_path)
